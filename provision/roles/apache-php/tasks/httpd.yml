@@ -1,0 +1,31 @@
+---
+- name: httpdをインストール
+  yum: pkg={{ item }} state=installed
+  with_items:
+    - httpd
+    - httpd-devel
+    - mod_ssl
+- name: /var/www/html/を作成
+  file: path=/var/www/html owner={{ username }} group={{ username }} mode=0755 force=yes state=directory
+- name: httpdをスタート
+  service: name=httpd state=started enabled=true
+  notify:
+  - restart httpd
+- name: httpd.confの設定
+  copy: src=httpd.conf dest=/etc/httpd/conf/httpd.conf owner=root group=root mode=0644
+  notify:
+    - restart httpd
+- name: virtualhosts.confの設定
+  copy: src=virtualhosts.conf dest=/etc/httpd/conf.d/virtualhosts.conf owner=root group=root mode=0644
+  notify:
+    - restart httpd
+- name: iptablesのポートを設定
+  lineinfile: dest=/etc/sysconfig/iptables
+              regexp="^-A INPUT -m state --state NEW -m {{item.protocol}} -p {{item.protocol}} --dport {{item.port}} -j ACCEPT$"
+              line="-A INPUT -m state --state NEW -m {{item.protocol}} -p {{item.protocol}} --dport {{item.port}} -j ACCEPT"
+              insertafter="^:OUTPUT ACCEPT \[\d*:\d*\]$"
+  with_items:
+    - { protocol: tcp, port: 80 }
+    - { protocol: tcp, port: 443 }
+  notify:
+    - restart iptables

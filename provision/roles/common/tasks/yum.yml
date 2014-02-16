@@ -1,0 +1,12 @@
+---
+- name: YUMレポジトリの設定
+  copy: src={{ item }} dest=/etc/yum.repos.d/{{ item }} owner=root group=root mode=0644
+  with_items:
+    - epel.repo
+    - remi.repo
+- name: epel GPGキーの設定
+  copy: src=RPM-GPG-KEY-remi dest=/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6 owner=root group=root mode=0644
+- name: remi GPGキーの設定
+  copy: src=RPM-GPG-KEY-remi dest=/etc/pki/rpm-gpg/RPM-GPG-KEY-remi owner=root group=root mode=0644
+- name: yum clean allを実行
+  command: yum clean all

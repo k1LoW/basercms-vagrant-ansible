@@ -1,0 +1,14 @@
+---
+- name: MySQLパッケージをインストール
+  yum: name={{ item }} state=installed
+  with_items:
+   - mysql-server
+   - MySQL-python
+
+- name: /etc/my.cnfを設定
+  template: src=my.cnf.j2 dest=/etc/my.cnf
+  notify:
+  - restart mysql
+
+- name: mysqldをスタート
+  service: name=mysqld state=started enabled=true

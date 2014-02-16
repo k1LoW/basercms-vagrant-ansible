@@ -1,0 +1,8 @@
+---
+- name: ユーザの追加
+  user: name={{ username }} comment=""
+- name: ユーザに公開鍵を設定
+  authorized_key: user={{ username }}
+                  key="{{ lookup('file', 'insecure_rsa.pub') }}"
+- name: sudo権限を付与
+  template: src=user.sudoer.j2 dest=/etc/sudoers.d/{{ username }} owner=root group=root mode=0440

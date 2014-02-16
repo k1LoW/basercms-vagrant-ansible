@@ -1,0 +1,75 @@
+---
+- name: Download baserCMS
+  get_url: url=https://github.com/basercms/basercms/archive/basercms-{{ basercms_version }}.tar.gz dest=/tmp/basercms-{{ basercms_version }}.tar.gz
+
+- name: Extract archive
+  command: chdir=/var/www/html/ /bin/tar xvf /tmp/basercms-{{ basercms_version }}.tar.gz
+
+- name: check basercms dir
+  command: ls /var/www/html/basercms
+  register: result
+  ignore_errors: True
+
+- name: mv dir
+  command: mv -f /var/www/html/basercms-basercms-{{ basercms_version }} /var/www/html/basercms
+  when: result | failed
+
+# - git: repo=git@github.com:basercms/basercms.git
+#        dest=/var/www/html/basercms
+#        version=basercms-{{ basercms_version }}
+
+- name: /var/www/html/basercms/app/Config
+  file:
+    path=/var/www/html/basercms/app/Config
+    owner={{ username }}
+    group={{ username }}
+    mode=0777
+    force=yes
+    state=directory
+    recurse=yes
+
+- name: /var/www/html/basercms/app/tmp
+  file:
+    path=/var/www/html/basercms/app/tmp
+    owner={{ username }}
+    group={{ username }}
+    mode=0777
+    force=yes
+    state=directory
+    recurse=yes
+
+- name: /var/www/html/basercms/app/webroot/files
+  file:
+    path=/var/www/html/basercms/app/webroot/files
+    owner={{ username }}
+    group={{ username }}
+    mode=0777
+    force=yes
+    state=directory
+    recurse=yes
+
+- name: /var/www/html/basercms/app/webroot/theme
+  file:
+    path=/var/www/html/basercms/app/webroot/theme
+    owner={{ username }}
+    group={{ username }}
+    mode=0777
+    force=yes
+    state=directory
+    recurse=yes
+
+- name: /var/www/html/basercms/app/db/
+  file:
+    path=/var/www/html/basercms/app/db/
+    owner={{ username }}
+    group={{ username }}
+    mode=0777
+    force=yes
+    state=directory
+    recurse=yes
+
+- name: データベースを作成
+  mysql_db: name={{ dbname }} state=present
+
+- name: データベースユーザを作成
+  mysql_user: name={{ dbuser }} password={{ dbpass }} priv=*.*:ALL host=localhost state=present
