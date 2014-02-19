@@ -17,9 +17,14 @@ baserCMS環境をVagrant上にAnsibleを用いて構築するためのVagrantfil
 
 PovisionerのAnsibleを直接利用することで、VagrantではないCentOS環境へbaserCMSを構築することができます
 
-以下はrootユーザのsshパスワードのみ分かっている状態(さくらVPSなど)を想定しています
+以下はrootユーザのsshパスワードのみ分かっている状態(さくらVPSなど)を想定しています。
 
-1. ``provision/vagrant`` を参考に ``provision/production``に必要情報を記述
-2. ``$ ansible-playbook provision/site.yml -i provision/production -u root --ask-pass``
+### 1.本番環境のInventory Fileを記述
+
+``provision/vagrant`` を参考に ``provision/production``に必要情報を記述
+
+### 2. ansible-playbookコマンドを実行
+
+    $ ansible-playbook provision/site.yml -i provision/production -u root --ask-pass
 
 
